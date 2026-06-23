@@ -1,0 +1,162 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import Header from './components/Header';
+import Hero from './components/Hero';
+import ProductsSection from './components/ProductsSection';
+import AboutAndPolicy from './components/AboutAndPolicy';
+import ContactSection from './components/ContactSection';
+import Footer from './components/Footer';
+import FloatingSocials from './components/FloatingSocials';
+import CartDrawer from './components/CartDrawer';
+import Loader from './components/Loader';
+import OwnerPanel from './components/OwnerPanel';
+
+export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState('hero');
+  const [lang, setLang] = useState<'ar' | 'he'>('ar');
+  const [isOwnerOpen, setIsOwnerOpen] = useState(false);
+  const [isOwnerAuthenticated, setIsOwnerAuthenticated] = useState(false);
+
+  // Handle smooth navigation clicks
+  const handleNavigate = (sectionId: string) => {
+    setActiveSection(sectionId);
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offset = 80; // Offset for navbar
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = element.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // IntersectionObserver to sync scroll to active nav header item
+  useEffect(() => {
+    const sections = ['hero', 'products', 'about-policies', 'contact'];
+    
+    const observerOptions = {
+      root: null,
+      rootMargin: '-30% 0px -60% 0px', // Trigger when section is in the view block
+      threshold: 0
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    sections.forEach((secId) => {
+      const element = document.getElementById(secId);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    return () => {
+      sections.forEach((secId) => {
+        const element = document.getElementById(secId);
+        if (element) {
+          observer.unobserve(element);
+        }
+      });
+    };
+  }, []);
+
+  return (
+    <>
+      <AnimatePresence mode="wait">
+        {isLoading && (
+          <motion.div
+            key="gold-loader-wrapper"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            className="fixed inset-0 z-[9999]"
+          >
+            <Loader lang={lang} onComplete={() => setIsLoading(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className={`min-h-screen bg-black text-white selection:bg-amber-500/30 selection:text-amber-300 antialiased font-sans relative overflow-hidden transition-opacity duration-1000 ${isLoading ? 'opacity-0 h-screen overflow-hidden' : 'opacity-100'}`}>
+        {/* Background Beautiful Attractive Premium Glows (ألوان جذابة ورائعة تدل على الغنى والفخامة وتلفت الأنظار) */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+          {/* Royal Gold Shimmer Glow */}
+          <div className="absolute top-0 right-[-10%] w-[60vw] h-[60vw] rounded-full bg-amber-600/10 blur-[150px] mix-blend-screen animate-pulse" />
+          {/* Luxury Amber Shimmer Glow */}
+          <div className="absolute top-[25%] left-[-15%] w-[70vw] h-[70vw] rounded-full bg-yellow-600/5 blur-[180px] mix-blend-screen" />
+          {/* Elegant Gold Mist Glow */}
+          <div className="absolute top-[55%] right-[-25%] w-[65vw] h-[65vw] rounded-full bg-amber-500/5 blur-[160px] mix-blend-screen" />
+          {/* Royal Amber Gold Glow */}
+          <div className="absolute bottom-0 left-[5%] w-[55vw] h-[55vw] rounded-full bg-amber-500/10 blur-[140px] mix-blend-screen" />
+        </div>
+
+        {/* Premium matrix grid overlay to reflect luxury digital identity */}
+        <div className="fixed inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none z-0" />
+
+        {/* Top Fixed Premium Header */}
+        <Header 
+          currentSection={activeSection} 
+          onNavigate={handleNavigate} 
+          lang={lang} 
+          setLang={setLang}
+          onOpenOwner={() => setIsOwnerOpen(true)}
+          isOwnerAuthenticated={isOwnerAuthenticated}
+        />
+
+        {/* Main Sections */}
+        <main className="relative z-10">
+          {/* Dynamic Interactive Hero with custom button route relays */}
+          <Hero
+            onDiscoverProducts={() => handleNavigate('products')}
+            onContactConcierge={() => handleNavigate('contact')}
+            lang={lang}
+          />
+
+          {/* Exclusive Catalog & Modals */}
+          <ProductsSection lang={lang} />
+
+          {/* Brand Heritage Heritage & Core Policies Switcher Sections */}
+          <AboutAndPolicy lang={lang} />
+
+          {/* Form and Office Locator holding Waze widget */}
+          <ContactSection lang={lang} />
+        </main>
+
+        {/* Corporate Luxury Footer */}
+        <Footer onNavigate={handleNavigate} lang={lang} />
+
+        {/* Luxury Cart Sliding Drawer Overlay */}
+        <CartDrawer lang={lang} />
+
+        {/* Floating Instagram and WhatsApp Buttons with Luxurious Pulse Effects */}
+        <FloatingSocials lang={lang} />
+
+        {/* Exclusive Executive Backoffice Controls */}
+        <OwnerPanel 
+          lang={lang} 
+          isOpen={isOwnerOpen} 
+          onClose={() => setIsOwnerOpen(false)}
+          isAuthenticated={isOwnerAuthenticated}
+          setIsAuthenticated={setIsOwnerAuthenticated}
+        />
+      </div>
+    </>
+  );
+}

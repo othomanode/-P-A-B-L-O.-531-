@@ -1,0 +1,6 @@
+{
+  "name": "Luxury Portal Arabic",
+  "description": "A high-end, responsive luxury showcase website in Arabic, featuring a elegant black and gold aesthetic, smooth motion animations, custom services, interactive product catalog, reviews, and a premium contact interface.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
